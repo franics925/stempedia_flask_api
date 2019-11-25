@@ -38,14 +38,18 @@ class Post(db.Model):
     body = db.Column(db.String(5000))
     tags = db.Column(db.String(200))
     date = db.Column(db.String(15))
+    user = db.column(db.Integer())
 
-    def __init__(self, name, description, category, topic, body, tags): 
+    def __init__(self, name, description, category, topic, body, tags, date, user): 
         self.name = name
         self.description = description
         self.category = category
         self.topic = topic
         self.body = body
         self.tags = tags
+        self.date = date
+        self.user = user
+
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -58,7 +62,7 @@ class Category(db.Model):
 ## SCHEMA
 class PostSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'name', 'description', 'category', 'topic', 'body', 'tags')
+        fields = ('id', 'name', 'description', 'category', 'topic', 'body', 'tags', 'date', 'user')
 
 class UserSchema(ma.Schema):
     class Meta:
@@ -90,6 +94,25 @@ def add_user():
     db.session.commit()
 
     return user_schema.jsonify(new_user)
+
+@app.route('/post', methods=['POST'])
+def add_post():
+    name = request.json['name']
+    description = request.json['description']
+    category = request.json['category']
+    topic = request.json['topic']
+    body = request.json['body']
+    tags = request.json['tags']
+    date = request.json['date']
+    user = request.json['user']
+
+    new_post = Post(name, description, category, topic, body, tags, date, user)
+
+    ## add to db
+    db.session.add(new_post)
+    db.session.commit()
+
+    return user_schema.jsonify(new_post)
 
 
 
