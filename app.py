@@ -4,7 +4,6 @@ from flask_marshmallow import Marshmallow
 # from datetime import datetime
 import os
 
-
 # Init app
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -22,6 +21,7 @@ class User(db.Model):
     name = db.Column(db.String(100))
     email = db.Column(db.String(100))
     description = db.Column(db.String(100))
+
     def __init__(self, name, email, description):
         self.name = name
         self.email = email
@@ -38,6 +38,7 @@ class Post(db.Model):
     body = db.Column(db.String(5000))
     tags = db.Column(db.String(200))
     date = db.Column(db.String(15))
+
     def __init__(self, name, description, category, topic, body, tags): 
         self.name = name
         self.description = description
@@ -49,6 +50,7 @@ class Post(db.Model):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True)
+
     def __init__(self, name):
         self.name = name
 
@@ -56,15 +58,39 @@ class Category(db.Model):
 ## SCHEMA
 class PostSchema(ma.Schema):
     class Meta:
-        fields= ('id', 'name', 'description', 'category', 'topic', 'body', 'tags')
+        fields = ('id', 'name', 'description', 'category', 'topic', 'body', 'tags')
 
 class UserSchema(ma.Schema):
     class Meta:
-        fields= ('id', 'name', 'email', 'description')
+        fields = ('id', 'name', 'email', 'description')
 
 class CategorySchema(ma.Schema):
     class Meta:
-        fields= ('id', 'name')
+        fields = ('id', 'name')
+
+#INIT SCHEMA
+user_schema = UserSchema()
+users_schema = PostSchema(many=True)
+post_schema = PostSchema()
+posts_schema = PostSchema(many=True)
+category_schema = CategorySchema()
+categories_schema = CategorySchema(many=True)
+
+#ROUTES
+@app.route('/user', methods=['POST'])
+def add_user():
+    name = request.json['name']
+    email = request.json['email']
+    description = request.json['description']
+
+    new_user = User(name, email, description)
+
+    ## add to db
+    db.session.add(new_user)
+    db.session.commit()
+
+    return user_schema.jsonify(new_user)
+
 
 
 # Run Server
