@@ -1,6 +1,8 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_script import Manager
+from flask_migrate import Migrate, MigrateCommand
 # from datetime import datetime
 import os
 
@@ -8,12 +10,17 @@ import os
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 # Database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+app.config['DEBUG'] = True
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/stem'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Init db
 db = SQLAlchemy(app)
 # Init ma
 ma = Marshmallow(app)
+# Configure app settings with migrations
+migrate = Migrate(app, db)
+manager = Manager(app)
+manager.add_command('db', MigrateCommand)
 
 ## CLASSES
 class User(db.Model):
@@ -95,7 +102,7 @@ def add_user():
 
 # Run Server
 if __name__ == '__main__':
-    app.run(debug=True)
+    manager.run()
 
 # # Test
 # @app.route('/', methods=['GET'])
