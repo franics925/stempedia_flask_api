@@ -1,5 +1,5 @@
 ## Start App
-#### run bash command: "python3 app.py"
+#### run bash command: "python3 app.py" or "python3 app.py runserver"
 
 
 ## Set Up DB

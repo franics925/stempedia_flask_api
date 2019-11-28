@@ -48,7 +48,7 @@ class Post(db.Model):
     category = db.relationship('Category', backref=db.backref('posts', lazy=True))
 
     # user = db.Column(db.String(15))
-    user_id = db.column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', backref=db.backref('posts', lazy=True))
 
     def __init__(self, title, description, category, topic, body, tags, date, user): 
