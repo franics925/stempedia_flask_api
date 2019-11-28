@@ -26,7 +26,7 @@ manager.add_command('db', MigrateCommand)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    email = db.Column(db.String(100))
+    email = db.Column(db.String(100), unique=True)
     description = db.Column(db.String(100))
 
     def __init__(self, name, email, description):
@@ -87,7 +87,8 @@ posts_schema = PostSchema(many=True)
 category_schema = CategorySchema()
 categories_schema = CategorySchema(many=True)
 
-#ROUTES
+## ROUTES
+## Create User
 @app.route('/user', methods=['POST'])
 def add_user():
     name = request.json['name']
@@ -102,6 +103,7 @@ def add_user():
 
     return user_schema.jsonify(new_user)
 
+## Create Post
 @app.route('/post', methods=['POST'])
 def add_post():
     name = request.json['name']
@@ -119,7 +121,7 @@ def add_post():
     db.session.add(new_post)
     db.session.commit()
 
-    return user_schema.jsonify(new_post)
+    return post_schema.jsonify(new_post)
 
 
 
