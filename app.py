@@ -36,19 +36,23 @@ class User(db.Model):
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True)
+    title = db.Column(db.String(100), unique=True)
     description = db.Column(db.String(250))
-    category = db.Column(db.String(50))
-    # category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
-    # category = db.relationship('Category', backref=db.backref('posts', lazy=True))
     topic = db.Column(db.String(50))
     body = db.Column(db.String(5000))
     tags = db.Column(db.String(200))
     date = db.Column(db.String(15))
-    user = db.column(db.Integer())
 
-    def __init__(self, name, description, category, topic, body, tags, date, user): 
-        self.name = name
+    # category = db.Column(db.String(50))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    category = db.relationship('Category', backref=db.backref('posts', lazy=True))
+
+    # user = db.Column(db.String(15))
+    user_id = db.column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('posts', lazy=True))
+
+    def __init__(self, title, description, category, topic, body, tags, date, user): 
+        self.title = title
         self.description = description
         self.category = category
         self.topic = topic
@@ -69,7 +73,7 @@ class Category(db.Model):
 ## SCHEMA
 class PostSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'name', 'description', 'category', 'topic', 'body', 'tags', 'date', 'user')
+        fields = ('id', 'title', 'description', 'category', 'topic', 'body', 'tags', 'date', 'user')
 
 class UserSchema(ma.Schema):
     class Meta:
@@ -106,7 +110,7 @@ def add_user():
 ## Create Post
 @app.route('/post', methods=['POST'])
 def add_post():
-    name = request.json['name']
+    title = request.json['title']
     description = request.json['description']
     category = request.json['category']
     topic = request.json['topic']
@@ -115,7 +119,7 @@ def add_post():
     date = request.json['date']
     user = request.json['user']
 
-    new_post = Post(name, description, category, topic, body, tags, date, user)
+    new_post = Post(title, description, category, topic, body, tags, date, user)
 
     ## add to db
     db.session.add(new_post)
