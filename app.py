@@ -92,6 +92,7 @@ category_schema = CategorySchema()
 categories_schema = CategorySchema(many=True)
 
 ## ROUTES
+
 ## Create User
 @app.route('/user', methods=['POST'])
 def add_user():
@@ -100,14 +101,13 @@ def add_user():
     description = request.json['description']
 
     new_user = User(name, email, description)
-
     ## add to db
     db.session.add(new_user)
     db.session.commit()
 
     return user_schema.jsonify(new_user)
 
-## Create Post
+## CREATE Post
 @app.route('/post', methods=['POST'])
 def add_post():
     title = request.json['title']
@@ -120,12 +120,37 @@ def add_post():
     user = request.json['user']
 
     new_post = Post(title, description, category, topic, body, tags, date, user)
-
     ## add to db
     db.session.add(new_post)
     db.session.commit()
 
     return post_schema.jsonify(new_post)
+
+## GET All Posts
+@app.route('/post', methods=['GET'])
+def get_posts():
+    all_posts = Post.query.all()
+    result = posts_schema.dump(all_posts)
+    return jsonify(result.data)
+
+## GET Single Post
+@app.route('/post/<id>', methods=['GET'])
+def get_post(id):
+    post = Post.query.get(id)
+    return post_schema.jsonify(post)
+
+## GET All Categories
+@app.route('/category', methods=['GET'])
+def get_categories():
+    all_categories = Category.query.all()
+    result = categories_schema.dump(all_categories)
+    return jsonify(result.data)
+
+## GET Single Category
+@app.route('/category/<id>', methods=['GET'])
+def get_category(id):
+    category = Category.query.get(id)
+    return post_schema.jsonify(category)
 
 
 
