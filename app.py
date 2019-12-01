@@ -107,6 +107,24 @@ def add_user():
 
     return user_schema.jsonify(new_user)
 
+## Update User
+@app.route('/user', methods=['PUT'])
+def update_product(id):
+    user = User.query.get(id)
+
+    name = request.json['name']
+    email = request.json['email']
+    description = request.json['description']
+
+    user.name = name
+    user.email = email
+    user.description = description
+
+    ## update db
+    db.session.commit()
+
+    return user_schema.jsonify(user)
+
 ## CREATE Post
 @app.route('/post', methods=['POST'])
 def add_post():
@@ -138,6 +156,7 @@ def get_posts():
 def get_post(id):
     post = Post.query.get(id)
     return post_schema.jsonify(post)
+
 
 ## GET All Categories
 @app.route('/category', methods=['GET'])
