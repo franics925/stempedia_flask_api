@@ -6,3 +6,7 @@ first install flask_migrate and flask_script then run:
 python app.py db init
 python app.py db migrate
 python app.py db upgrade
+
+to make database changes use:
+"python app.py db migrate"
+"python app.py db upgrade"
